@@ -57,7 +57,6 @@ int main(int argc, char* argv[])
 		printf("CLIENT: failed to connect\n");
 	}
 	
-	//Having trouble figuring out how to do the actual I/O properly after connecting to the server...
 	//while(!feof(stdin)){
 		fgets(buffer, BUFFER_SIZE, stdin); //get string from stdin
 		send(sockfd, buffer, strlen(buffer), 0); //send string to server

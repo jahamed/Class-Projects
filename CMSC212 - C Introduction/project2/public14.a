@@ -1,0 +1,2 @@
+main: li    R01   main
+      jr    R01

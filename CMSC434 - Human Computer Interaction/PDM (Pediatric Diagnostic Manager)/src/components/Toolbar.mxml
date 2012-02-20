@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" width="100%" paddingLeft="5" paddingRight="5"
+			 borderStyle="solid">
+		
+		<mx:Image source="@Embed(source='../assets/images/nurse.png')" />
+
+		<mx:Array id="buttonArray">
+			<mx:Object icon="@Embed('../assets/images/1.png')" />
+			<mx:Object icon="@Embed('../assets/images/2.png')" />
+			<mx:Object icon="@Embed('../assets/images/3.png')" />
+			<mx:Object icon="@Embed('../assets/images/4.png')" />
+		</mx:Array> 
+		
+		<mx:ButtonBar autoLayout="true" dataProvider="{buttonArray}" />
+			 
+		<!--
+		<mx:Button label="Calculator" height="100%" width="85"/>
+		<mx:Label width="204"/>
+		<mx:Button label="Calendar" height="100%" width="85"/>
+		<mx:Label width="204"/>
+		<mx:Button label="Stopwatch" height="100%" width="85"/>
+		<mx:Label width="204"/>
+		<mx:Button label="Conversion" height="100%" width="85"/>
+		-->
+		
+	</mx:HBox>

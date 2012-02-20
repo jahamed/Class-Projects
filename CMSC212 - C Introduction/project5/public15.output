@@ -1,0 +1,16 @@
+delete() = -1
+delete() = -1
+lookup() = -1
+lookup() = -1
+insert() =  1
+lookup() =  1
+delete() =  1
+delete() = -1
+lookup() = -1
+insert() = -1
+insert() =  1
+insert() =  1
+insert() = -1
+insert() = -1
+insert() = -1
+No memory leak detected.

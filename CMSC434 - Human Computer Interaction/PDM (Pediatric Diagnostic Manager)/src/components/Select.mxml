@@ -1,0 +1,17 @@
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" width="100%">
+		
+		<mx:Metadata>
+			[Event("clickNew")]
+			[Event("clickSelect")]
+		</mx:Metadata>
+		
+		<mx:Button height="100%" width="40%" label="Create a New Patient"
+				   click="{dispatchEvent(new Event('clickNew'))}"/>
+				   
+		<mx:Label width="25%"/>
+		
+		<mx:Button height="100%" width="40%" label="Select an Existing Patient"
+				   click="{dispatchEvent(new Event('clickSelect'))}"/>
+
+</mx:HBox>
+

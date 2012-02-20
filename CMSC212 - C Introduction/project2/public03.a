@@ -1,0 +1,6 @@
+main: li    R01    5
+      li    R02    3
+      andb  R03    R01   R02
+      orb   R04    R01   R02
+      xorb  R05    R01   R02
+      halt

@@ -1,0 +1,7 @@
+insert() = 1
+insert() = -1
+lookup() = 1
+delete() = 1
+lookup() = -1
+size() = 0
+No memory leak detected.

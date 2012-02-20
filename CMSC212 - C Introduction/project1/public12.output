@@ -1,0 +1,5 @@
+li          R01 0001
+add         R02 R01 R02
+add         R01 R01 R02
+halt       
+Test finished!

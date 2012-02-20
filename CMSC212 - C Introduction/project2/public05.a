@@ -1,0 +1,8 @@
+init: li    R01   1
+      move  R02   R01
+      li    R03   4
+      li    R04   loop
+loop: add   R02   R02   R01
+      blt   R03   R02   exit
+      jr    R04
+exit: halt

@@ -1,0 +1,8 @@
+init: li         R01   1
+      move       R02   R01
+      li         R03   main
+      li         R04   10
+main: write_int  R02
+      write_char R04
+      add        R02   R02   R01
+      jr         R03

@@ -1,0 +1,45 @@
+Integer Registers:
+Register R00: 0
+Register R01: 2011
+Register R02: 4
+Register R03: 0
+Register R04: 0
+Register R05: 0
+Register R06: 0
+Register R07: 0
+Register R08: 0
+Register R09: 0
+Register R10: 0
+Register R11: 0
+Register R12: 0
+Register R13: 0
+Register R14: 0
+Register R15: 16
+
+Float Registers:
+Register F00: 0.000000
+Register F01: 0.000000
+Register F02: 0.000000
+Register F03: 0.000000
+Register F04: 0.000000
+Register F05: 0.000000
+Register F06: 0.000000
+Register F07: 0.000000
+Register F08: 0.000000
+Register F09: 0.000000
+Register F10: 0.000000
+Register F11: 0.000000
+Register F12: 0.000000
+Register F13: 0.000000
+Register F14: 0.000000
+Register F15: 0.000000
+
+Memory:
+0x0000: 0x38014100
+0x0004: 0x34004200
+0x0008: 0x04000112
+0x000c: 0x3c018100
+0x0010: 0x00000000
+0x0014: 0x000007d7
+0x0018: 0x000007db
+0x001c: 0x00000000

@@ -1,0 +1,1 @@
+find_char("abcd", 'c') = [c]->[d]

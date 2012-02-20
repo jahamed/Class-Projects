@@ -1,0 +1,4 @@
+compare("cheezburger", "cheeseburger") = 1
+compare("cheeseburger", "cheezburger") = -1
+compare("cheeseburger", "cheeseburger") = 0
+compare("cheese", "cheeseburger") = -1

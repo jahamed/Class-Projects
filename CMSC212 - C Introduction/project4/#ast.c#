@@ -1,0 +1,807 @@
+/*
+Name=Javed Ahamed
+Glue Logon=jahamed
+UID=109365000
+Sec=0202
+*/
+/*"I pledge on my honor that I have not given or received any unauthorized
+assistance on this assignment."*/
+
+/*The purpose of this project is to build an ABSTRACT SYNTAX TREE and implement 
+ * methods to operate on these trees. Each AST represents an equation, and 
+ * methods for comparing, building, and printing these trees are implemented
+ * here.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "ast.h"
+
+/*Defining structures to help build linked list to store Vars*/
+typedef struct node {
+  Value varValue;
+  char * varName;
+  struct node * next;
+} Node;
+
+typedef struct varlist {
+  Node * head;
+  Node * tail;
+} Linked_vars;
+
+/*the global persistant state variable for evaluate*/
+Linked_vars varList = {NULL, NULL};
+
+/*definitions for my own helper functions*/
+void NULL_exit_protocol();
+int check_precedence(Operator op1, Operator op2);
+void addVar(char * nameIn);
+Node * findVar(char * findMe);
+
+/*this method adds the variable name in the parameter to the persistent state
+ * linked list*/
+void addVar(char * nameIn){
+  Node * addMe = NULL;
+
+  addMe = malloc(sizeof(Node));
+  if(addMe == NULL){
+    NULL_exit_protocol();
+  }
+
+  addMe->next = NULL;
+  addMe->varName = nameIn;
+
+  if(varList.head == NULL && varList.tail == NULL){
+    varList.head = addMe;
+    varList.tail = addMe;
+  }else{
+    varList.tail->next = addMe;
+    varList.tail = addMe;
+  }
+}
+
+/*this method finds the variable in the linked list, and returns 
+ * a pointer to it*/
+Node * findVar(char * findMe){
+  Node * tempFinder = varList.head;
+
+  while(tempFinder != NULL){
+    if(strcmp(tempFinder->varName, findMe) == 0){
+      return tempFinder;
+    }
+    tempFinder = tempFinder->next;
+  }
+  /*return NULL if string not found*/
+  return NULL;
+}
+
+/*function to call when memory allocation failed*/
+void NULL_exit_protocol(){
+  printf("Error: memory allocation failed!");
+  exit(-1);
+}
+
+/*this is a helper function for print to check precedence between
+ * two operators. It returns 1 if op1 is higher precedence than op2 and 0
+ * if they are the same precedence and -1 if op1 is a lower precedence than
+ * op2*/
+int check_precedence(Operator op1, Operator op2){
+  switch(op1){
+  case PLUS:
+    if(op2==PLUS||op2==MINUS)
+      return 0;
+    if(op2==TIMES||op2==DIVIDE||op2==MODULUS||op2==POWER||op2==UNARY_PLUS||
+op2==UNARY_MINUS)
+      return -1;
+    return 1;
+    break;
+  case MINUS:
+    /*same as PLUS*/
+    if(op2==PLUS||op2==MINUS)
+      return 0;
+    if(op2==TIMES||op2==DIVIDE||op2==MODULUS||op2==POWER||op2==UNARY_PLUS||
+op2==UNARY_MINUS)
+      return -1;
+    return 1;
+    break;
+  case TIMES:
+    if(op2==TIMES||op2==DIVIDE||op2==MODULUS)
+      return 0;
+    if(op2==POWER||op2==UNARY_PLUS||op2==UNARY_MINUS)
+      return -1;
+    return 1;
+    break;
+  case DIVIDE:
+    if(op2==TIMES||op2==DIVIDE||op2==MODULUS)
+      return 0;
+    if(op2==POWER||op2==UNARY_PLUS||op2==UNARY_MINUS)
+      return -1;
+    return 1;
+    break;
+  case MODULUS:
+    if(op2==TIMES||op2==DIVIDE||op2==MODULUS)
+      return 0;
+    if(op2==POWER||op2==UNARY_PLUS||op2==UNARY_MINUS)
+      return -1;
+    return 1;
+    break;
+  case POWER:
+    if(op2==POWER)
+      return 0;
+    if(op2==UNARY_PLUS||op2==UNARY_MINUS)
+      return -1;
+    return 1;
+    break;
+  case EQUALS:
+    if(op2==EQUALS||op2==NOT_EQUALS)
+      return 0;
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 1;
+    return -1;
+    break;
+  case NOT_EQUALS:
+    if(op2==EQUALS||op2==NOT_EQUALS)
+      return 0;
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 1;
+    return -1;
+    break;
+  case ASSIGN:
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 0;
+    return -1;
+    break;
+  case ASSIGN_PLUS:
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 0;
+    return -1;
+    break;
+  case ASSIGN_MINUS:
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 0;
+    return -1;        
+    break;
+  case ASSIGN_TIMES:
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 0;
+    return -1;             
+    break;
+  case ASSIGN_DIVIDE:
+    if(op2==ASSIGN||op2==ASSIGN_PLUS||op2==ASSIGN_MINUS||op2==ASSIGN_TIMES||
+op2==ASSIGN_DIVIDE)
+      return 0;
+    return -1;       
+    break;
+  case UNARY_PLUS:
+    if(op2==UNARY_PLUS||op2==UNARY_MINUS)
+      return 0;
+    return 1;       
+    break;
+  case UNARY_MINUS:
+    if(op2==UNARY_PLUS||op2==UNARY_MINUS)
+      return 0;
+    return 1;        
+    break;
+  }
+  /*this should not happen but is included to silence warnings treated as
+   *errors*/
+  return 0;
+}
+
+
+/* Non-Helper Functions Start Here*/
+
+
+/*this function creates and returns a pointer to a new AST_node of type int
+ * constant and that stores i in the int_value field*/
+AST_node *create_int_constant_node(const int i){
+  AST_node * returnNode = malloc(sizeof(AST_node));
+
+  if(returnNode == NULL){
+    NULL_exit_protocol();
+  }
+
+  returnNode->left = NULL;
+  returnNode->right = NULL;
+  returnNode->type = INT_CONSTANT;
+  returnNode->data.number.int_value = i;
+
+  return returnNode;
+}
+
+/*this function creates and returns a pointer to a new AST_node of type double
+ * constant that stores d in the double_value field*/
+AST_node *create_double_constant_node(const double d){
+  AST_node * returnNode = malloc(sizeof(AST_node));
+
+  if(returnNode == NULL){
+    NULL_exit_protocol();
+  }
+
+  returnNode->left = NULL;
+  returnNode->right = NULL;
+  returnNode->type = DOUBLE_CONSTANT;
+  returnNode->data.number.double_value = d;
+
+  return returnNode;
+}
+
+/*this function creates and returns a pointer to a new AST_node of type variable
+ * that stores a copy of the variable name in the name field of data*/
+AST_node *create_variable_node(const char *var){
+  AST_node * returnNode = malloc(sizeof(AST_node));
+  char * copyVar = NULL;
+
+  if(returnNode == NULL){
+    NULL_exit_protocol();
+  }
+
+  returnNode->left = NULL;
+  returnNode->right = NULL;
+  returnNode->type = VARIABLE;
+
+  /*if these conditions apply empty node has to be returned*/
+  if(var == NULL || strlen(var) == 0){
+    return NULL;
+  }
+
+  /*the +1 in malloc is to accomodate the null char*/
+  copyVar = (char *)malloc((strlen(var)+1)*sizeof(char));
+
+  if(copyVar == NULL){
+    NULL_exit_protocol();
+  }
+
+  /*setting data.name to a copy of the parameter*/
+  strcpy(copyVar, var);
+  returnNode->data.name=copyVar;
+
+  return returnNode;
+}
+
+
+/*this function creates and returns a pointer to a new AST_node of type operator
+ *with the parameter pointers corresponding to the left and right trees*/
+AST_node *create_operator_node(const Operator op, AST_node *l, AST_node *r){
+  AST_node * returnNode = malloc(sizeof(AST_node));
+
+  if(returnNode == NULL){
+    NULL_exit_protocol();
+  }
+
+  if(op == UNARY_PLUS || op == UNARY_MINUS){
+    if(l == NULL){
+      return NULL;
+    }
+    returnNode->left = l;
+    returnNode->right = NULL;
+    returnNode->type = OPERATOR;
+    returnNode->data.operator = op;
+    return returnNode;
+  }
+
+  if(l == NULL || r == NULL){
+    return NULL;
+  }
+  returnNode->left = l;
+  returnNode->right = r;
+  returnNode->type = OPERATOR;
+  returnNode->data.operator = op;
+  return returnNode;
+}
+
+/*this function evaluates the expression represented by the AST starting at
+ * expr, and stores the value in the second parameter. Evaluate returns error
+ * conditions based on whether the expression was evaluated, not_evaluated, or
+ * if the expression was invalid*/
+Eval_return evaluate(const AST_node *expr, Value *result){
+
+  Value leftValue, rightValue;
+  Node * temp = NULL;
+  Eval_return state = EVALUATED;
+
+  switch(expr->type){
+  case INT_CONSTANT:
+    result->value_type=IS_INT_VALUE;
+    result->number.int_value=expr->data.number.int_value;
+    break;
+  case DOUBLE_CONSTANT:
+    result->value_type=IS_DOUBLE_VALUE;
+    result->number.double_value=expr->data.number.double_value;
+    break;
+  case VARIABLE:
+    if(findVar(expr->data.name) == NULL){
+      return NOT_EVALUATED;
+    }else{
+      if(findVar(expr->data.name)->varValue.value_type == IS_INT_VALUE){
+	result->value_type = IS_INT_VALUE;
+	result->number.int_value = findVar(expr->data.name)->
+varValue.number.int_value;
+      }else{ /*varValue.value_type == IS_DOUBLE_VALUE*/
+	result->value_type = IS_DOUBLE_VALUE;
+	result->number.double_value = findVar(expr->data.name)->
+varValue.number.double_value;
+      }
+      return EVALUATED;
+    }
+    break;
+  case OPERATOR:
+    /*operator case covered in if statement*/
+    break;
+  }
+
+  if(expr->type==OPERATOR){
+    
+    if(expr->data.operator != ASSIGN){
+      state = evaluate(expr->left, &leftValue);
+      if(state == NOT_EVALUATED){
+        return NOT_EVALUATED;
+      }else if(state == INVALID_AST){
+        return INVALID_AST;
+      }
+    }else{
+      leftValue.value_type = IS_INT_VALUE;
+    }
+
+    if(expr->data.operator != UNARY_PLUS && expr->data.operator != UNARY_MINUS){
+      state = evaluate(expr->right, &rightValue);
+      if(state == NOT_EVALUATED){
+        return NOT_EVALUATED;
+      }else if(state == INVALID_AST){
+        return INVALID_AST;
+      }  
+    
+      if(leftValue.value_type==IS_INT_VALUE && rightValue.value_type==
+IS_DOUBLE_VALUE){
+        leftValue.number.double_value = leftValue.number.int_value;
+        leftValue.value_type = IS_DOUBLE_VALUE;
+      }
+      if(leftValue.value_type==IS_DOUBLE_VALUE && rightValue.value_type==
+IS_INT_VALUE){
+        rightValue.number.double_value = rightValue.number.int_value;
+        rightValue.value_type = IS_DOUBLE_VALUE;
+      }
+      if(leftValue.value_type==IS_INT_VALUE && rightValue.value_type==
+IS_INT_VALUE){
+        result->value_type = IS_INT_VALUE;
+        switch(expr->data.operator){
+
+	case PLUS:
+	  result->number.int_value = leftValue.number.int_value +
+ rightValue.number.int_value;
+	  break;
+	case MINUS:
+	  result->number.int_value = leftValue.number.int_value -
+ rightValue.number.int_value;
+	  break;
+	case TIMES:
+	  result->number.int_value = leftValue.number.int_value *
+ rightValue.number.int_value;
+	  break;
+	case DIVIDE:
+	  if(rightValue.number.int_value == 0){
+	    return INVALID_AST;
+	  }
+	  result->number.int_value = leftValue.number.int_value /
+ rightValue.number.int_value;
+	  break;
+	case MODULUS:
+	  if(rightValue.number.int_value == 0){
+	    return INVALID_AST;
+	  }
+	  result->number.int_value = leftValue.number.int_value %
+ rightValue.number.int_value;
+	  break;
+	case POWER:
+	  result->number.double_value = pow(leftValue.number.int_value,
+ rightValue.number.int_value);
+	  result->value_type = IS_DOUBLE_VALUE;
+	  break;
+	case EQUALS:
+	  result->number.int_value = (leftValue.number.int_value ==
+ rightValue.number.int_value) ? 1 : 0;
+	  break;
+	case NOT_EQUALS:
+	  result->number.int_value = (leftValue.number.int_value !=
+ rightValue.number.int_value) ? 1 : 0;
+	  break;
+	case ASSIGN:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  if(temp == NULL){ /* have to add to list then, since assn. value to
+            var*/
+	    addVar(expr->left->data.name);
+	    temp = findVar(expr->left->data.name);
+	    temp->varValue.value_type = IS_INT_VALUE;
+	    temp->varValue.number.int_value = rightValue.number.int_value;
+	    result->number.int_value = temp->varValue.number.int_value;
+	  }else{
+	    temp->varValue.value_type = IS_INT_VALUE;
+	    temp->varValue.number.int_value = rightValue.number.int_value;
+	    result->number.int_value = temp->varValue.number.int_value;
+	  }
+	  return EVALUATED;
+	  break;
+	case ASSIGN_PLUS:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.int_value = temp->varValue.number.int_value +
+          rightValue.number.int_value;
+	  result->number.int_value = temp->varValue.number.int_value;
+	  break;        
+	case ASSIGN_MINUS:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.int_value = temp->varValue.number.int_value -
+          rightValue.number.int_value;
+	  result->number.int_value = temp->varValue.number.int_value;
+	  break;
+	case ASSIGN_TIMES:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.int_value = temp->varValue.number.int_value *
+          rightValue.number.int_value;
+	  result->number.int_value = temp->varValue.number.int_value;
+	  break;
+	case ASSIGN_DIVIDE:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.int_value = temp->varValue.number.int_value /
+          rightValue.number.int_value;
+	  result->number.int_value = temp->varValue.number.int_value;
+	  break;
+	default:
+	  break;
+        }
+      }else if(leftValue.value_type==IS_DOUBLE_VALUE && rightValue.value_type
+        ==IS_DOUBLE_VALUE){
+        result->value_type = IS_DOUBLE_VALUE;
+        switch(expr->data.operator){
+
+	case PLUS:
+	  result->number.double_value = leftValue.number.double_value +
+          rightValue.number.double_value;
+	  break;
+	case MINUS:
+	  result->number.double_value = leftValue.number.double_value -
+          rightValue.number.double_value;
+	  break;
+	case TIMES:
+	  result->number.double_value = leftValue.number.double_value *
+          rightValue.number.double_value;
+	  break;
+	case DIVIDE:
+	  if(rightValue.number.double_value == 0){
+	    return INVALID_AST;
+	  }
+	  result->number.double_value = leftValue.number.double_value /
+          rightValue.number.double_value;
+	  break;
+	case MODULUS:
+	  return INVALID_AST;
+	  break;
+	case POWER:
+	  if(leftValue.number.double_value < 0){
+	    return INVALID_AST;
+	  }
+	  result->number.double_value = pow(leftValue.number.double_value,
+          rightValue.number.double_value);
+	  break;
+	case EQUALS:
+	  result->number.double_value = (leftValue.number.double_value ==
+	  rightValue.number.double_value) ? 1 : 0;
+	  break;
+	case NOT_EQUALS:
+	  result->number.double_value = (leftValue.number.double_value !=
+	  rightValue.number.double_value) ? 1 : 0;
+	  break;
+	case ASSIGN:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  if(temp == NULL){ /* have to add to list then, since assn.
+			       value to var*/
+	    addVar(expr->left->data.name);
+	    temp = findVar(expr->left->data.name);
+	    temp->varValue.value_type = IS_DOUBLE_VALUE;
+	    temp->varValue.number.double_value = rightValue.number.double_value;
+	    result->number.double_value = temp->varValue.number.double_value;
+	  }else{
+	    temp->varValue.value_type = IS_DOUBLE_VALUE;
+	    temp->varValue.number.double_value = rightValue.number.double_value;
+	    result->number.double_value = temp->varValue.number.double_value;
+	  }
+	  return EVALUATED;
+	  break;
+	case ASSIGN_PLUS:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.double_value = temp->varValue.number.
+	    double_value + rightValue.number.double_value;
+	  result->number.double_value = temp->varValue.number.double_value;
+	  break;        
+	case ASSIGN_MINUS:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.double_value = temp->varValue.number.
+	    double_value - rightValue.number.double_value;
+	  result->number.double_value = temp->varValue.number.double_value;
+	  break;
+	case ASSIGN_TIMES:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.double_value = temp->varValue.
+	    number.double_value * rightValue.number.double_value;
+	  result->number.double_value = temp->varValue.number.double_value;
+	  break;
+	case ASSIGN_DIVIDE:
+	  if(expr->left->type != VARIABLE){
+	    return INVALID_AST;
+	  }
+	  temp = findVar(expr->left->data.name);
+	  temp->varValue.number.double_value = temp->varValue.number.
+	    double_value / rightValue.number.double_value;
+	  result->number.double_value = temp->varValue.number.double_value;
+	  break;
+	default:
+	  break;
+        }
+      }
+    }else{ /*operator is either unary plus or unary minus*/
+      switch(expr->data.operator){
+
+      case UNARY_PLUS:
+	if(leftValue.value_type == IS_INT_VALUE){
+	  result->value_type = IS_INT_VALUE;
+	  result->number.int_value = leftValue.number.int_value;
+	}else{
+	  result->value_type = IS_DOUBLE_VALUE;
+	  result->number.double_value = leftValue.number.double_value;
+	}
+	break;
+      case UNARY_MINUS:
+	if(leftValue.value_type == IS_INT_VALUE){
+	  result->value_type = IS_INT_VALUE;
+	  result->number.int_value = (leftValue.number.int_value)*(-1);
+	}else{
+	  result->value_type = IS_DOUBLE_VALUE;
+	  result->number.double_value = (leftValue.number.double_value)*(-1);
+	}
+	break;
+      default:
+	break;
+      }
+    } 
+  }
+
+  return EVALUATED; 
+}
+
+
+
+/*this function prints the value of the double or int stored in the structure
+ * v*/
+void print_value(const Value v){
+  if(v.value_type == IS_INT_VALUE){
+    printf("%d", v.number.int_value);
+  }else{ /*IS_DOUBLE_VALUE*/
+    printf("%.4f", v.number.double_value);
+  }
+}
+
+/*This function should remove or free all of that data that is being used to
+ *store expr and set *expr to NULL*/
+void clear(AST_node **expr){
+ 
+  if(expr == NULL || *expr == NULL){
+    return;
+  }
+
+  clear(&((*expr)->left));    
+  clear(&((*expr)->right));
+  
+  if((*expr)->type == VARIABLE){
+    free((*expr)->data.name);
+  }
+  free(*expr);
+  *expr = NULL;
+
+}
+
+/*this function creates and returns an entire copy of the AST that expr points
+ * too*/
+AST_node *copy(const AST_node *expr){
+
+  switch(expr->type){
+  case INT_CONSTANT:
+    return create_int_constant_node(expr->data.number.int_value);
+  case DOUBLE_CONSTANT:
+    return create_double_constant_node(expr->data.number.double_value);
+  case VARIABLE:
+    return create_variable_node(expr->data.name);
+  case OPERATOR:
+    return create_operator_node(expr->data.operator, copy(expr->left),
+				copy(expr->right));
+  }
+  return NULL;
+}
+
+/*this function returns 1 if the ASTS pointed too by expr1 and expr2 are
+ * structurally equivalent*/
+int equal(const AST_node *expr1, const AST_node *expr2){
+  
+  if(expr1 == NULL && expr2 == NULL){
+    return 1;
+  }
+  if(expr1 == NULL || expr2 == NULL){
+    return 0;
+  }
+  if(expr1->type != expr2->type){
+    return 0;
+  }
+
+
+  switch(expr1->type){
+
+  case INT_CONSTANT:
+    if(expr1->data.number.int_value != expr2->data.number.int_value)
+      return 0;
+    break;
+  case DOUBLE_CONSTANT:
+    if(expr1->data.number.double_value != expr2->data.number.double_value)
+      return 0;
+    break;
+  case VARIABLE:
+    if(expr1->data.name == NULL || expr2->data.name == NULL)
+      return 0;
+    
+    if(strcmp(expr1->data.name, expr2->data.name)!=0)
+      return 0;
+    break;
+  case OPERATOR:
+    if(expr1->data.operator != expr2->data.operator)
+      return 0;
+    break;
+  }
+
+  if(equal(expr1->left, expr2->left)==0){
+    return 0;
+  }
+  if(equal(expr1->right, expr2->right)==0){
+    return 0;
+  }
+  return 1;
+}
+
+/*This prints the tree refered to by expr in a human readable format with
+ * paranthesis included*/
+void print(const AST_node *expr){
+  
+  int right_paran=0, left_paran=0;
+
+  if(expr->left!=NULL&&expr->type==OPERATOR&&expr->data.operator!=UNARY_PLUS&&
+expr->data.operator!=UNARY_MINUS){
+  
+    if(expr->left->type==OPERATOR&&check_precedence(expr->data.operator,
+ expr->left->data.operator)>0){
+      printf("(");
+      left_paran=1;
+    }
+    
+    print(expr->left);
+
+    if(left_paran){
+      printf(")");
+    }
+
+  }
+  
+  switch(expr->type){
+  case INT_CONSTANT:
+    printf("%d", expr->data.number.int_value);
+    break;
+  case DOUBLE_CONSTANT:
+    printf("%.4f", expr->data.number.double_value);
+    break;
+  case VARIABLE:
+    printf("%s", expr->data.name);
+    break;
+  case OPERATOR:
+    switch(expr->data.operator){
+    case PLUS:
+      printf(" + ");
+      break;
+    case MINUS:
+      printf(" - ");
+      break;
+    case TIMES:
+      printf(" * ");
+      break;
+    case DIVIDE:
+      printf(" / ");
+      break;
+    case MODULUS:
+      printf(" %% ");
+      break;
+    case POWER:
+      printf(" ^ ");
+      break;
+    case EQUALS:
+      printf(" == ");
+      break;
+    case NOT_EQUALS:
+      printf(" != ");
+      break;
+    case ASSIGN:
+      printf(" = ");
+      break;
+    case ASSIGN_PLUS:
+      printf(" += ");
+      break;
+    case ASSIGN_MINUS:
+      printf(" -= ");
+      break;
+    case ASSIGN_TIMES:
+      printf(" *= ");
+      break;
+    case ASSIGN_DIVIDE:
+      printf(" /= ");
+      break;
+    case UNARY_PLUS:
+      printf("+");
+      print(expr->left);
+      break;
+    case UNARY_MINUS:
+      printf("-");
+      print(expr->left);
+      break;
+    }
+
+
+
+  }
+   
+  if(expr->right!=NULL&&expr->type==OPERATOR&&expr->data.operator!=UNARY_PLUS
+&&expr->data.operator!=UNARY_MINUS){
+    if(expr->right->type==OPERATOR&&(check_precedence(expr->data.operator,
+ expr->right->data.operator)>0||check_precedence(expr->data.operator
+       , expr->right->data.operator)==0)){
+      printf("(");
+      right_paran=1;
+    }
+
+    print(expr->right);
+    if(right_paran)
+      printf(")");
+  }
+
+}
+
+
+
+
+

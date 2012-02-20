@@ -1,0 +1,7 @@
+s = "scream"
+t = "rea"
+u = "his"
+replace(s, t, u) returns 1
+s = "schism"
+t = "rea"
+u = "his"

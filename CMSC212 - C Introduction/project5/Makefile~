@@ -1,0 +1,149 @@
+#%=wildcard
+#$^=all dependencies
+#$@=target
+#$<=first dependence only
+#www.gnu.org/software/make/manual
+
+CC= gcc
+CFLAGS= -ansi -pedantic-errors -Werror -Wall -g
+
+all : public01.x public02.x public03.x public04.x public05.x public06.x \
+public07.x public08.x public09.x public10.x public11.x public12.x public13.x \
+public14.x public15.x main.x tester.x
+
+tester.x : tester.o list.o
+	$(CC) $(CFLAGS) $^ -o tester.x
+	
+tester.o : tester.c table.h
+	$(CC) $(CFLAGS) -c tester.c
+	
+list.o : list.c list.h table.h
+	$(CC) $(CFLAGS) -c list.c
+
+int-list.o : int-list.c int-list.h int-list-implementation.h
+	$(CC) $(CFLAGS) -c int-list.c
+
+main.x: main.o list.o
+	$(CC) $(CFLAGS) $^ -o main.x
+	
+main.o: main.c table.h
+	$(CC) $(CFLAGS) -c main.c
+
+public01.x : public01.o int-list.o
+	$(CC) $(CFLAGS) $^ -o public01.x
+	
+public01.o : public01.c int-list.h int-list-implementation.h
+	$(CC) $(CFLAGS) -c public01.c
+
+#2	
+public02.x : public02.o int-list.o
+	$(CC) $(CFLAGS) $^ -o public02.x
+	
+public02.o : public02.c int-list.h int-list-implementation.h
+	$(CC) $(CFLAGS) -c public02.c
+
+#3
+public03.x : public03.o
+	$(CC) $(CFLAGS) $^ -o public03.x
+	
+public03.o : public03.c
+	$(CC) $(CFLAGS) -c public03.c
+	
+#4
+public04.x : public04.o list.o
+	$(CC) $(CFLAGS) $^ -o public04.x
+	
+public04.o : public04.c list.h table.h
+	$(CC) $(CFLAGS) -c public04.c
+
+#5	
+public05.x : public05.o list.o
+	$(CC) $(CFLAGS) $^ -o public05.x
+	
+public05.o : public05.c list.h table.h
+	$(CC) $(CFLAGS) -c public05.c
+	
+#6
+public06.x : public06.o list.o
+	$(CC) $(CFLAGS) $^ -o public06.x
+	
+public06.o : public06.c list.h table.h
+	$(CC) $(CFLAGS) -c public06.c
+	
+#7
+public07.x : public07.o list.o
+	$(CC) $(CFLAGS) $^ -o public07.x
+	
+public07.o : public07.c list.h table.h
+	$(CC) $(CFLAGS) -c public07.c
+
+#8
+public08.x : public08.o list.o
+	$(CC) $(CFLAGS) $^ -o public08.x
+	
+public08.o : public08.c list.h table.h
+	$(CC) $(CFLAGS) -c public08.c
+	
+#9
+public09.x : public09.o list.o
+	$(CC) $(CFLAGS) $^ -o public09.x
+	
+public09.o : public09.c list.h table.h
+	$(CC) $(CFLAGS) -c public09.c
+	
+#10
+public10.x : public10.o list.o
+	$(CC) $(CFLAGS) $^ -o public10.x
+	
+public10.o : public10.c list.h table.h
+	$(CC) $(CFLAGS) -c public10.c
+	
+#11
+public11.x : public11.o list.o
+	$(CC) $(CFLAGS) $^ -o public11.x
+	
+public11.o : public11.c list.h table.h
+	$(CC) $(CFLAGS) -c public11.c
+	
+#12
+public12.x : public12.o list.o
+	$(CC) $(CFLAGS) $^ -o public12.x
+	
+public12.o : public12.c list.h table.h
+	$(CC) $(CFLAGS) -c public12.c
+	
+#13
+public13.x : public13.o list.o
+	$(CC) $(CFLAGS) $^ -o public13.x
+	
+public13.o : public04.c list.h table.h
+	$(CC) $(CFLAGS) -c public13.c
+	
+#14
+public14.x : public14.o list.o
+	$(CC) $(CFLAGS) $^ -o public14.x
+	
+public14.o : public14.c list.h table.h
+	$(CC) $(CFLAGS) -c public14.c
+	
+#15	
+public15.x : public15.o list.o
+	$(CC) $(CFLAGS) $^ -o public15.x
+	
+public15.o : public15.c list.h table.h
+	$(CC) $(CFLAGS) -c public15.c
+	
+clean: 
+	rm -f public*.x
+	rm -f main.x
+
+test:	all $(patsubst public%.c, test%, $(wildcard public*.c))
+
+test%: public%.x
+	./public$*.x | diff -bB - public$*.output
+
+memtest: all $(patsubst public%.c, memtest%, $(wildcard public*.c))
+	
+memtest%: public%.x
+	valgrind -q --leak-check=yes ./public$*.x
+

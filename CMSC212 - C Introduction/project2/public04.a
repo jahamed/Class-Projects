@@ -1,0 +1,10 @@
+main: li    R01   10
+      andl  R02   R01   R01
+      andl  R03   R00   R01
+      andl  R04   R00   R00
+      orl   R05   R01   R01
+      orl   R06   R00   R01
+      orl   R07   R00   R00
+      notl  R08   R01
+      notl  R09   R00
+      halt

@@ -1,0 +1,7 @@
+main: lw    R01   R00   source
+      li    R02   4
+      add   R01   R01   R02
+      sw    R01   R00   dest
+      halt
+source:     .data  2007
+dest:       .data     0

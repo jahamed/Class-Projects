@@ -1,0 +1,4 @@
+main: li    R01   1
+      sub   R02   R00   R01
+      lw    R03   R02   0
+      halt

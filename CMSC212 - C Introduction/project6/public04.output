@@ -1,0 +1,10 @@
+apple --> 30
+banana --> 10
+coconut --> 6
+donut --> 6
+eggplant --> 4
+Value: 4
+Value: 6
+Value: 10
+Value: 30
+No memory leak detected.

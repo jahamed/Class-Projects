@@ -1,0 +1,7 @@
+main: li    R01   6
+      li    R02   3
+      add   R03   R01   R02
+      sub   R04   R01   R02
+      mul   R05   R01   R02
+      div   R06   R01   R02
+      halt

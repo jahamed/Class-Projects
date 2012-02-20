@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml"
+						layout="absolute" width="1028" height="768"
+						xmlns:comp="components.*" backgroundColor="WHITE"
+						currentState="Select" creationComplete="init()"
+						close="{conn.close()}">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.controls.DataGrid;
+			import flash.events.*;
+			import mx.core.Window;
+			import valueObjects.Patient;
+
+			private var conn:SQLConnection;
+			private var createStmt:SQLStatement;
+			public var selectedPatient:Patient;
+			public var databaseLoc:String = "C:\\Users\\Javed Ahamed\\Documents\\eclipse-SDK-3.4.2-win32\\workspace\\PDM\\src\\patientInfo.db";
+			//DATABASE STUFF
+			private function init():void
+			{
+				conn=new SQLConnection();
+				conn.addEventListener(SQLEvent.OPEN, openSuccess);
+				//	conn.addEventListener(SQLErrorEvent.ERROR, openFailure);
+
+				status="Creating and opening database";
+				conn.openAsync(new File(databaseLoc));
+			}
+
+			private function openSuccess(event:SQLEvent):void
+			{
+				conn.removeEventListener(SQLEvent.OPEN, openSuccess);
+				//conn.removeEventListener(SQLErrorEvent.ERROR, openFailure);
+				createStmt=new SQLStatement();
+
+				createStmt.sqlConnection=conn;
+				var sql:String="";
+				sql+="CREATE TABLE IF NOT EXISTS patients (";
+				sql+="	id		INTEGER PRIMARY KEY AUTOINCREMENT,";
+				sql+="	firstName	TEXT,";
+				sql+="	lastName	TEXT,";
+				sql+="	gender	TEXT,";
+				sql+="	dob		NUMERIC,";
+				sql+="	weight	NUMERIC,";
+				sql+="	height	NUMERIC,";
+				sql+="  pic 	TEXT,";
+				sql+="	lastSeen	NUMERIC";
+				sql+=")";
+				createStmt.text=sql;
+				createStmt.addEventListener(SQLEvent.RESULT, createResult);
+				createStmt.execute()
+
+			}
+
+			private function createResult(event:SQLEvent)
+			{
+				createStmt.removeEventListener(SQLEvent.RESULT, createResult);
+				conn.close();
+				var helper:Alert;
+			}
+
+			//END DATABASE STUFF
+
+			private function clickBackHandler(event:Event):void
+			{
+				switch (currentState)
+				{
+					case "NewPatient":
+						this.currentState="Select"
+						break;
+					case "SelectPatient":
+						this.currentState="Select"
+						break;
+					case "Dashboard":
+						this.currentState="SelectPatient";
+						break;
+					default:
+						break;
+				}
+
+			}
+
+			private function clickNextHandler(event:Event):void
+			{
+			}
+
+			private function clickNewHandler(event:Event):void
+			{
+				this.currentState="NewPatient"
+			}
+
+			private function clickSelectHandler(event:Event):void
+			{
+				this.currentState="SelectPatient"
+			}
+
+			private function clickAddPatient(event:Event):void
+			{
+				this.currentState="Dashboard"
+				dashboard.init();
+			}
+
+			private function goHome(event:Event):void
+			{
+				this.currentState="Select"
+			}
+
+			private function selectPatient(event:Event):void
+			{
+				this.currentState="Dashboard"
+				dashboard.init();
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox height="100%" width="100%">
+		<comp:Toolbar height="85" width="100%"/>
+		<comp:Title id="titleBanner" height="85" width="100%"
+					text="Title goes here"/>
+		<mx:Canvas id="MainCanvas" height="460" width="100%"
+				   label="Meat goes here"/>
+		<comp:ToolbarBottom height="85" width="100%"
+							clickNext="clickNextHandler(event)"
+							clickHome="goHome(event)"
+							clickBack="clickBackHandler(event)"/>
+	</mx:VBox>
+	<mx:states>
+		<mx:State name="Select"
+				  enterState="{titleBanner.text = 'Create a new patient or select an existing one'}">
+			<mx:AddChild relativeTo="{MainCanvas}" position="lastChild">
+				<comp:Select clickNew="clickNewHandler(event)"
+							 clickSelect="clickSelectHandler(event)"/>
+			</mx:AddChild>
+			<mx:SetProperty name="width" value="1024"/>
+		</mx:State>
+		<mx:State name="NewPatient"
+				  enterState="{titleBanner.text = 'Add a Patient'}">
+			<mx:AddChild relativeTo="{MainCanvas}" position="lastChild">
+				<comp:AddPatient clickAdd="clickAddPatient(event)"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="SelectPatient"
+				  enterState="{titleBanner.text = 'Search for a Patient'}">
+			<mx:AddChild relativeTo="{MainCanvas}" position="lastChild">
+				<comp:PatientSelect clickSelect="selectPatient(event)"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="Dashboard"
+				  enterState="{titleBanner.text = 'Patient Information'}">
+			<mx:AddChild relativeTo="{MainCanvas}" position="lastChild">
+				<comp:PatientInfo id="dashboard"/>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+</mx:WindowedApplication>

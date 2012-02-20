@@ -1,0 +1,3 @@
+main: li    R01   5
+      div   R02   R01   R00
+      halt

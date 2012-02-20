@@ -1,0 +1,290 @@
+;;Javed Ahamed and Mark Finkelstein
+;;Sec 0202
+
+;;#lang scheme ;;apparently you have to comment this out to make it run in guile
+
+;; Contract: number number -> number
+;; Purpose: Return the number of digits in a positive number
+(define size
+  (lambda (num length)
+    (cond
+      ((zero? num) 1)
+      ((< (floor num) 1) length)
+      (else (size (/ num 10) (+ length 1)))
+      )
+    )
+  )
+
+;; Contract: number -> number
+;; Purpose: Return 10^power
+(define ten-exp
+  (lambda (power)
+    (ten-exp-helper power 1)
+    )
+  )
+
+;; Condition, 1 should be sent in as a to work properly
+;; Contract: number -> number
+;; Purpose: Return 10^n 
+;; Tail Recursive
+(define ten-exp-helper
+  (lambda (power multiple)
+    (cond
+      ((not (zero? power)) (ten-exp-helper (- power 1) (* 10 multiple)))
+      (else multiple)
+      )
+    )
+  )
+
+;; Condition: str is smaller than width (and therefore needs padding)
+;; Contract: string number -> string
+;; Purpose: Return a right justified string
+(define right-justify
+  (lambda (string width)
+    (string-append (make-string (- width (string-length string)) '#\space) string)
+    )
+  )
+
+;; Condition: str is smaller than width
+;; Contract: number -> string
+;; Purpose: Returns a line of appropriate width
+(define line
+  (lambda (width)
+    (make-string width #\-)
+    )
+  )
+
+
+
+;; Contract: number number -> display
+;; Purpose: Shows multiplication steps
+(define multsteps
+  (lambda (factor1 factor2 exp maxsize)
+    (newline)
+    (display (right-justify (number->string (* (* factor1 (modulo factor2 10)) (ten-exp exp))) maxsize))
+    (cond
+      ((< factor2 10) 0)
+      (else (multsteps factor1 (quotient factor2 10) (+ exp 1) maxsize))
+      )
+    )
+  )
+
+;; Contract: (number) -> number
+;; Purpose: Return the largest value in a list
+(define largest
+  (lambda (list)
+    (cond
+      ((null? list) 0)
+      (else (let ((first (car list)) (rest (largest (cdr list))))
+              (cond
+                ((> first rest) first)
+                (else rest)
+                )
+              )
+            )
+      )
+    )
+  )
+
+;; Contract: number -> boolean
+;; Purpose: Check to see if an input is valid, works for lmult and ldiv
+(define valid-check
+  (lambda (input)
+    (cond
+      ((list? input) '"An input is a list")
+      ((not (integer? input)) '"An input is not a valid integer")
+      ((< input 0) '"An input is negative")
+      (else #f)
+      )
+    )
+  )
+
+;;Contract: number number -> display
+;;Purpose: Main lmult driver
+(define lmult
+  (lambda (factor1 factor2)
+    (cond
+      ((valid-check factor1))
+      ((valid-check factor2))
+      (else (let ((product (* factor1 factor2)))
+              (let ((maxsize (size (largest (list factor1 factor2 product)) 0))) 
+                (display (right-justify (number->string factor1) maxsize))
+                (newline)
+                (display (right-justify (number->string factor2) maxsize))
+                (newline)
+                (display  (right-justify (line (size product 0)) maxsize))
+                (multsteps factor1 factor2 0 maxsize)
+                (newline)
+                (cond
+                  ((not (eq? (size factor2 0) 1)) ;account for case of factor1*singledigit
+                   (display  (right-justify (line (size product 0)) maxsize))
+                   (newline)
+                   (display (right-justify (number->string product) maxsize))
+                   (newline)
+                   )
+                  )
+                )
+              )
+            )
+      )
+    )
+  )
+
+
+;DIVISION STARTS HERE
+
+;;Contract: number number -> number
+;;Purpose: Same as size, but if num is 0, it returns length 1.
+(define size-zero
+  (lambda (num length)
+    (cond
+      ((< (floor num) 1) length)
+      (else (size (/ num 10) (+ length 1)))
+      )
+    )
+  )
+
+;;Contract: number number -> display
+;;Purpose: Displays the Remainder, if it is not 0
+(define print-remainder
+  (lambda (divd divs)
+    (let ((rem (remainder divd divs)))
+      (cond
+        ((eq? 0 rem) '"")
+        (else (string-append '"R" (number->string rem)))     
+        )
+      )
+    )
+  )
+
+;;Contract: number number -> (number)
+;;Purpose: Makes a list out of a number num with size, length
+(define make-list
+  (lambda (num length)
+    (let ((expon (ten-exp (- length 1))))
+      (cond
+        ((eq? length 1) (list num))
+        (else (cons (quotient num expon) (make-list (modulo num expon) (- length 1))))
+        )
+      )
+    )
+  )
+
+;;Contract: number -> boolean
+;;Purpose: Check to make sure we don't divide by 0.
+(define zero-check
+  (lambda (num)
+    (cond
+      ((eq? num 0) '"Trying to divide by zero")
+      (else #f)
+      )
+    )
+  )
+
+;;Contract: number number -> display
+;;Purpose: This is the main ldiv driver, calls ldiv-steps
+(define ldiv
+  (lambda (divd divs)
+    (cond
+      ((valid-check divd))
+      ((valid-check divs))
+      ((zero-check divs))
+      (else
+       (let ((quot (quotient divd divs)) (shift (+ 3 (size divs 0))))
+         (let ((quot-size (size quot 0)))
+           (start-up divd divs quot shift)
+           (finish (ldiv-steps shift divd divs (- quot-size 1) (make-list quot quot-size)) divd divs (+ shift (size divd 0)))
+           (newline)
+           )
+         )
+       )
+      )
+    )
+  )
+
+;;Contract: number number number number -> display
+;;Purpose: Draws final line, and remainder
+(define finish
+  (lambda (first divd divs maxsize)
+    (cond 
+      ((> first (size (remainder divd divs) 0)) (display (right-justify (line first) maxsize)))
+      (else (display (right-justify (line (size (remainder divd divs) 0)) maxsize))))
+    (newline)
+    (display (right-justify (number->string(remainder divd divs)) maxsize))
+    )
+  )
+
+;;Contract: number number number number -> display
+;;Purpose: Draws starting image for division, divd and divs
+(define start-up
+  (lambda (divd divs quot shift)
+    (display (right-justify (number->string quot) (+ shift (size divd 0))))
+    (display (print-remainder divd divs))
+    (newline)
+    (display  (position (- shift 1) (line (+ (size divd 0) 1))))
+    (newline)
+    (display (string-append (number->string divs) " | " (number->string divd))
+             )
+    )
+  )
+
+;;Contract: number number number number (number) -> display
+;;Purpose: This is the helper function for ldiv, draws the subtrahend, line, and remainder every call.
+(define ldiv-steps
+  (lambda (shift divd divs quot-size lquot)
+    (cond
+      ((eq? quot-size 0) 
+       (newline) 
+       (display (position (+ shift(- (size divd 0) (size (* (car lquot) divs) 0))) (number->string (* (car lquot) divs))))
+       (newline)
+       (size (* (car lquot) divs) 0)
+       )
+      (else (let ((sub (* (car lquot) divs)) (subdiv (quotient divd (ten-exp quot-size))))
+              (let ((nextshift (+ shift (shift-finder subdiv sub))))
+                (newline)
+                (display (position (+ shift(- (size subdiv 0) (size sub 0))) (number->string sub)))
+                (newline)
+                (display (position (+ shift (- (size subdiv 0) (size-det sub subdiv))) (line (+ (size-det sub subdiv) 1))))
+                (newline)
+                (display (position nextshift (number->string (quotient (- divd (* sub (ten-exp quot-size))) (ten-exp (- quot-size 1))))))
+                (ldiv-steps nextshift (- divd (* sub (ten-exp quot-size))) divs (- quot-size 1) (cdr lquot) )
+                )
+              )
+            )
+      )
+    )
+  )
+
+;;Contract: number number -> number
+;;Purpose: Special case for 0 as subtrahend, to determine line length
+(define size-det
+  (lambda (sub subdiv)
+    (cond
+      ((eq? sub 0) (size subdiv 0))
+      (else (size sub 0))
+      )
+    )
+  )
+
+;;Contract: number string -> string
+;;Purpose: Return length spaces, followed by string. IOW, positions or buffers string with spaces.
+(define position
+  (lambda (length string)
+    (string-append (make-string length '#\space) string)
+    )
+  )
+
+;;Contract: number number -> number
+;;Purpose: Determines the amount of spaces to shift by, after analyzing numbers being subtracted.
+(define shift-finder
+  (lambda (top bottom)
+    (let ((sizebot (size bottom 0)))
+      (cond
+        ((and (equal? bottom 0) (equal? top 0)) 1)
+        ((equal? bottom 0) 0)
+        ((eq? (- (size top 0) (size-zero (- top bottom) 0)) 1) 1)
+        (else (- (size top 0) (size-zero (- top bottom) 0)))
+        )
+      )
+    )
+  )

@@ -163,6 +163,7 @@ class MainAgent(CaptureAgent):
   def inEnemyTerritory(self, gameState):
     return gameState.getAgentState(self.index).isPacman
 
+  #The A*/heuristic code is my partners
   def aStarSearch(self, problem):
     startNode = Node(problem.getStartState(), None, 0, None)
     if problem.isGoalState(startNode.state): return []

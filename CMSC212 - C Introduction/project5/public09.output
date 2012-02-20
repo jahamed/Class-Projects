@@ -1,0 +1,5 @@
+insert() = 1
+insert() = -1
+lookup() = 1; item = "value"
+size() = 1
+No memory leak detected.

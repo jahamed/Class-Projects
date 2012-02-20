@@ -1,0 +1,7 @@
+main: read_float F01
+      read_float F02
+      fadd       F03   F01   F02
+      fsub       F04   F01   F02
+      fmul       F05   F01   F02
+      fdiv       F06   F01   F02
+      halt

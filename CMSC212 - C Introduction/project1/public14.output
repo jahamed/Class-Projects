@@ -1,0 +1,10 @@
+li          R01 0212
+sw          R01 R02 0b08
+li          R01 0327
+lw          R02 R14 0b08
+add         R03 R01 R02
+write_int   R03
+li          R04 000a
+write_char  R04
+halt       
+Test finished!

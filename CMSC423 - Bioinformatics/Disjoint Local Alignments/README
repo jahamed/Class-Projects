@@ -1,0 +1,1 @@
+This project finds the k-most disjoint local alignments between two sequences. It uses a modified Smith-Waterman algorithm. http://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm

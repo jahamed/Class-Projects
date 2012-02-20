@@ -1,0 +1,24 @@
+#include "node.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+
+Node* initialize(char char_in, Node * next_in){
+  
+  Node * temp;
+  temp=malloc(sizeof(Node));
+  if(temp==NULL){
+    printf("Error: memory allocation failed!\n");
+    exit(1);
+  }
+  temp->ch=char_in;
+  temp->next=next_in;
+  return temp;
+
+}
+
+char returnchar(Node * tempnode){
+  
+  return tempnode->ch;
+
+}

@@ -1,0 +1,4 @@
+main: li    R01   1
+      move  R02   R01
+      li    R01   4
+      halt

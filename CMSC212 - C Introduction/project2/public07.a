@@ -1,0 +1,3 @@
+dummy: halt
+main:  li    R01   1
+       halt

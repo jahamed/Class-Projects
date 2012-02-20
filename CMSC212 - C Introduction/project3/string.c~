@@ -1,0 +1,535 @@
+/*
+Name=Javed Ahamed
+Glue Logon=jahamed
+UID=109365000
+Sec=0202
+*/
+/*"I pledge on my honor that I have not given or received any unauthorized
+assistance on this assignment."*/
+
+/*The purpose of this project was to implement string standard functions using 
+a singly linked list representation. It tested knowledge of string functions,
+advanced pointer topics and memory allocation/deallocation.*/
+
+#include "string.h"
+#include "node.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+
+/*This function is used to initialize strings before any other string method can be called on them*/
+void init(Linked_string *s){
+
+  /*all i am doing for my initialization is setting head and tail to NULL*/
+  if(s==NULL){
+    return;
+  }
+	
+  s->head=NULL;
+  s->tail=NULL;
+
+}
+
+
+/*This function extends the string parameter by one char by adding the new_char character to the end of the string*/
+void append_char(Linked_string *s, char new_char){
+	
+  Node *append=NULL;
+	
+  /*function should return if s is null or the char is the null char*/
+  if(s==NULL||new_char=='\0'){
+    return;
+  }
+	
+  /*allocating memory for one node, to add to string*/
+  append=initialize(new_char, NULL);
+		
+  /*Case of Empty String */
+  if(s->head==NULL && s->tail==NULL){
+    s->head=append;
+    s->tail=append;
+  }else{ /*The string already has elements*/
+    s->tail->next=append;
+    s->tail=append;
+  }
+	
+}
+
+/*This function removes prior elements of the string s, and stores the characters in order from arr into it instead*/
+void copy_from_char_array(Linked_string *s, const char arr[]){
+	
+  int arrsize=1;
+  int i;
+	
+  if(s==NULL||arr==NULL){
+    return;
+  }
+	
+  /*clear the string values*/
+  reset(s);
+	
+  /*find the arrsize*/
+  for(i=0;arr[i]!='\0';i++){
+    arrsize++;
+  }
+	
+  /*append arrsize characters to s*/
+  for(i=0;i<arrsize;i++){
+    append_char(s, arr[i]);
+  }
+	
+}
+
+
+/*This function is the opposite of copy_from_char_array. It copies all the elements in string s to an allocated array*/
+void copy_to_char_array(char **arr, const Linked_string s){
+	
+  int tempsize=0;
+  int length_s=length(s);
+  Node * tempnode=s.head;
+	
+  if(arr==NULL){
+    return;
+  }
+	
+  /*allocate an array*/
+  *arr=calloc(length(s)+1,sizeof(char));
+
+  if(*arr==NULL){
+    printf("Error: memory allocation failed!\n");
+    exit(1);
+  }
+	
+  for(tempsize=0;tempsize<length_s;tempsize++){
+    (*arr)[tempsize]=tempnode->ch;
+    tempnode=tempnode->next;	
+  }
+  /*set the last char in array to be the null char so further string func
+    tions can be called on it*/
+  (*arr)[length(s)]='\0';
+
+}
+
+
+/*this returns the length of a string, and returns 0 for a string with no chars*/
+int length(const Linked_string s){
+
+  int stringsize=0;
+  Node *tempnode=s.head;
+	
+  while(tempnode!=NULL){
+    stringsize++;
+    tempnode=tempnode->next;
+  }	
+		
+  return stringsize;
+
+}
+
+
+/*this function prints all of the characters in the string s, in order*/
+void print(const Linked_string s){
+
+  Node *tempnode=s.head;
+	
+  while(tempnode!=NULL&&tempnode->ch!='\0'){
+    printf("%c",tempnode->ch);
+    tempnode=tempnode->next;
+  }
+	
+}
+
+
+/*this function adds copies of the characters of string t to the end of string
+  s*/
+void append(Linked_string *s, const Linked_string t){
+
+  Node * tempnode=t.head;
+  int lengthoft=length(t);
+  int i=0;
+
+  if(s==NULL){
+    return;
+  }
+	
+  while(tempnode!=NULL&&i<lengthoft){
+    append_char(s, tempnode->ch);
+    tempnode=tempnode->next;
+    i++;
+  }
+
+}
+
+
+/*this function removes prior contents of string s and stores the contents of 
+  string t into it instead*/
+void copy(Linked_string *s, const Linked_string t){
+
+  Node * tempnode=t.head;
+
+  if(s==NULL){
+    return;
+  }
+  
+  /*this tests if the two strings passed in are actually the same thing.
+    If so then we do not need to do any freeing and copying since the starting 
+    values will be equal to the end values. we can just return.*/
+  if(compare(*s,t)==0){
+    return;
+  }
+
+  reset(s);
+	
+  while(tempnode!=NULL){
+    append_char(s, tempnode->ch);
+    tempnode=tempnode->next;
+  }
+      
+}
+
+
+/*this function works exactly the same as the append function except it only 
+  appends len characters*/
+void safe_append(Linked_string *s, const Linked_string t, int len){
+	
+  int copiedsofar=0;
+  Node * tempnode=t.head;
+
+  if(s==NULL){
+    return;
+  }
+	
+  while(tempnode!=NULL&&copiedsofar<len){
+    append_char(s, tempnode->ch);
+    tempnode=tempnode->next;
+    copiedsofar++;
+  }
+
+}
+
+
+/*this function works just like copy except it only copies len characters of t
+  into s*/
+void safe_copy(Linked_string *s, const Linked_string t, int len){
+
+  Node * tempnode=t.head;
+  int copiedsofar=0;
+	
+  if(s==NULL){
+    return;
+  }
+	
+  reset(s);
+	
+  while(tempnode!=NULL&&copiedsofar<len){
+    append_char(s, tempnode->ch);
+    tempnode=tempnode->next;
+    copiedsofar++;
+  }
+	
+}
+
+
+/*This function resets a strings contents, and also frees their contents*/
+void reset(Linked_string *s){
+
+  Node * previous=NULL;
+  Node * current=s->head;
+	
+  if(s==NULL){
+    return;
+  }
+	
+  /*frees elements of string*/
+  while(current!=NULL){
+    previous=current;
+    current=current->next;
+    free(previous);
+  }
+	
+  /*this sets head and tail to null*/
+  init(s);
+
+}
+
+
+/*This function clears a strings contents, and also frees their contents.
+  In my implementation clear and reset have to same outcome*/
+void clear(Linked_string *s){
+  
+  /*in my implementation reset and clear have the same func.*/
+  reset(s);
+
+}
+
+
+/*This function compares string s and t lexigraphically. returns -1 if s is 
+  before t. 0 if they are equal and 1 if s is after t*/
+int compare(const Linked_string s, const Linked_string t){
+	
+  Node * temp_s=s.head;
+  Node * temp_t=t.head;
+	
+  while(temp_s!=NULL&&temp_t!=NULL){
+    if(returnchar(temp_s)<returnchar(temp_t)){
+      return -1;
+    }else if(temp_s->ch>temp_t->ch){
+      return 1;
+    }
+    temp_s=temp_s->next;
+    temp_t=temp_t->next;
+  }
+	
+  if(temp_s==NULL&&temp_t!=NULL)
+    return -1;
+  if(temp_s!=NULL&&temp_t==NULL)
+    return 1;
+		
+  return 0;
+
+}
+
+
+/*this function returns the index of the string t contained in string s and 0
+  if string t is not contained in string s*/
+int find(const Linked_string s, const Linked_string t){
+
+  Node * temp_s=s.head;
+  Node * inner_temp_s=temp_s;
+  Node * temp_t=t.head;
+  int indexfound=0;
+  int i=1;
+  int breakoccured=0;
+	
+  if(temp_t->ch=='\0'&&temp_s->ch=='\0'){
+    return 0;
+  }else if(temp_t->ch=='\0'){
+    return 1;
+  }
+	
+	
+  while(temp_s!=NULL){
+    if(temp_s->ch==temp_t->ch){
+      inner_temp_s=temp_s->next;
+      temp_t=temp_t->next;
+      breakoccured=0;
+      while(temp_t!=NULL){
+	if(temp_t->ch!=inner_temp_s->ch){
+	  indexfound=0;
+	  temp_t=t.head;
+	  breakoccured=1;
+	  break;
+	}
+	temp_t=temp_t->next;
+	inner_temp_s=inner_temp_s->next;
+      }
+      if(breakoccured==0){
+	indexfound=i;
+      }
+    }
+    if(indexfound!=0){
+      return indexfound;
+    }
+    temp_s=temp_s->next;
+    i++;
+  }
+	
+  return 0;
+
+}
+
+
+/*this function returns a Node * to the first occurence of ch in s*/
+Node* find_char(const Linked_string s, char ch){
+
+  Node * temp=s.head;
+	
+  while(temp!=NULL){
+    if(temp->ch==ch){
+      return temp;
+    }
+    temp=temp->next;
+  }
+  /*return NULL if it wasnt found*/
+  return NULL;
+
+}
+
+
+/*this function returns a Node * to the last occurence of ch in s*/
+Node* find_char_end(const Linked_string s, char ch){
+	
+  Node * temp=s.head;
+  Node * lastsofar=NULL;
+	
+  while(temp!=NULL){
+    if(temp->ch==ch){
+      lastsofar=temp;
+    }
+    temp=temp->next;
+  }
+  return lastsofar;
+
+}
+
+
+/*this function returns the index or position in s of the first character also 
+  in t*/
+int search_in(const Linked_string s, const Linked_string t){
+	
+  Node * temp_s=s.head;
+  Node * temp_t=t.head;
+  int index=1;
+	
+  while(temp_s!=NULL){
+	
+    while(temp_t!=NULL){
+      if(temp_t->ch==temp_s->ch){
+	return index;
+      }
+      temp_t=temp_t->next;
+    }
+    temp_t=t.head;
+    temp_s=temp_s->next;
+    index++;
+  }
+	
+  return 0;
+
+}
+
+
+/*this function returns the index or position in s of the first character
+  that is also not in t*/
+int search_not_in(const Linked_string s, const Linked_string t){
+
+  Node * temp_s=s.head;
+  Node * temp_t=t.head;
+  int index=1;
+  int in_t=0;
+	
+  while(temp_s!=NULL){
+	
+    while(temp_t!=NULL){
+      if(temp_t->ch==temp_s->ch){
+	in_t=1;
+      }
+      temp_t=temp_t->next;
+    }
+    if(in_t==0){
+      return index;
+    }
+    in_t=0;
+    temp_t=t.head;
+    temp_s=temp_s->next;
+    index++;
+  }
+	
+  return 0;
+}
+
+
+/*this function replaces the contents of t with num chars from s starting at 
+  start_pos*/
+int substring(const Linked_string s, int start_pos, int num_chars,
+              Linked_string *t){
+	
+  int strlength=length(s);
+  Node * tempnode=s.head;
+  int curr_pos=1;
+	
+  if(strlength<start_pos||num_chars<0||start_pos+num_chars-1>strlength){
+    return 0;
+  }
+	
+  reset(t);
+	
+  while(curr_pos<start_pos){
+    tempnode=tempnode->next;
+    curr_pos++;
+  }
+	
+  while(curr_pos<start_pos+num_chars){
+    append_char(t, tempnode->ch);
+    tempnode=tempnode->next;
+    curr_pos++;
+  }
+	
+  return 1;
+	
+}
+
+
+/*this function replaces the the first occurence of string old in s with a copy
+  of the contents of string new*/
+int replace(Linked_string *s, const Linked_string old,
+            const Linked_string new){
+
+  
+  int findindex=find(*s,old);
+  int counter=1;
+  int length_old=length(old);
+  int free_length_counter=0;
+  Node * snode=s->head;
+  Node * previous=snode;
+  Node * tofree;
+  Linked_string *temp;
+
+  if(findindex==0){
+    return 0;
+  }
+
+  temp=malloc(sizeof(Linked_string));
+  init(temp);
+
+  while(counter<findindex){
+    append_char(temp, snode->ch);
+    previous=snode;
+    snode=snode->next;
+    counter++;
+  }
+ 
+
+  while(free_length_counter<length_old){
+    tofree=snode;
+    snode=snode->next;
+    if(findindex!=1){
+      previous->next=snode;
+    }
+    free(tofree);
+    free_length_counter++;
+  }
+
+  append(temp, new);
+ 
+  while(snode!=NULL){
+    append_char(temp, snode->ch);
+    snode=snode->next;
+  }
+ 
+
+  reset(s);
+  *s=*temp;
+  
+  return 1;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

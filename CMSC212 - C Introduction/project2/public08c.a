@@ -1,0 +1,3 @@
+main: li    R01   8192
+      lw    R02   R01   0
+      halt

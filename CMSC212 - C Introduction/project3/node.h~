@@ -1,0 +1,13 @@
+#if !defined(NODE_H)
+#define NODE_H
+
+Node * initialize(char char_in, Node * next_in);
+char returnchar(Node * tempnode);
+
+
+typedef struct node {
+  char ch;
+  struct node *next;
+} Node;
+
+#endif

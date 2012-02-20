@@ -1,0 +1,3 @@
+find("indefatigable", "gab") = 9
+find("indefatigable", "able") = 10
+find("indefatigable", "fat") = 5
