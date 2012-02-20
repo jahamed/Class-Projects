@@ -1,0 +1,45 @@
+<commands
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.cs.umd.edu/users/meesh/420/part1/part1in.xsd"
+ 	spatialWidth="1024"
+ 	spatialHeight="1024">
+ <createCity name="Edinburgh" y="500" x="100" radius="50" color="red"/>
+ <createCity name="Lisbon" x="100" y="100" radius="80" color="orange"/>
+ <createCity name="London" radius="60" x="150" y="250" color="yellow"/>
+ <createCity name="Prague" x="150" color="green" y="700" radius="60" />
+ <createCity name="Madrid" x="200" y="100" radius="90" color="blue"/>
+ <createCity name="Paris" x="250" y="300" radius="40" color="purple"/>
+ <createCity name="Copenhagen" x="250" y="500" radius="50" color="black"/>
+ <createCity name="Marseilles" x="350" y="100" radius="50" color="red"/>
+ <createCity name="Vienna" x="350" y="700" radius="70" color="orange"/>
+ <createCity name="Amsterdam" x="400" y="300" radius="70" color="yellow"/>
+ <createCity name="Munich" x="400" y="200" radius="30" color="green"/>
+ <createCity name="Milan" x="500" y="50" radius="20" color="blue"/>
+ <createCity name="Rome" x="500" y="450" radius="80" color="purple"/>
+ <createCity name="Naples" x="450" y="650" radius="50" color="black"/>
+ <createCity name="Varna" x="100" y="800" radius="90" color="red"/>
+ <createCity name="Geneva" x="300" y="200" radius="50" color="orange"/>
+ <saveMap name="part1.rangeCitiesAndSaveMap.output.pic1"/>
+ <mapCity name="Edinburgh"/>
+ <saveMap name="part1.rangeCitiesAndSaveMap.output.pic2"/>
+ <mapCity name="Lisbon"/>
+ <saveMap name="part1.rangeCitiesAndSaveMap.output.pic3"/>
+ <mapCity name="London"/>
+ <mapCity name="Prague"/>
+ <mapCity name="Madrid"/>
+ <mapCity name="Paris"/>
+ <mapCity name="Copenhagen"/>
+ <mapCity name="Marseilles"/>
+ <mapCity name="Vienna"/>
+ <mapCity name="Amsterdam"/>
+ <mapCity name="Munich"/>
+ <mapCity name="Milan"/>
+ <mapCity name="Rome"/>
+ <mapCity name="Naples"/>
+ <mapCity name="Varna"/>
+ <mapCity name="Geneva"/>
+ <saveMap name="part1.rangeCitiesAndSaveMap.output.pic4"/>
+ <rangeCities x="512" y="512" radius="5000"/>
+ <rangeCities x="512" y="512" radius="400" saveMap="part1.rangeCitiesAndSaveMap.output.pic5"/>
+ <rangeCities x="300" y="200" radius="100" saveMap="part1.rangeCitiesAndSaveMap.output.pic6"/>
+</commands>

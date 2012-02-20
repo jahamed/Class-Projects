@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox height="100%" width="100%" backgroundColor="WHITE"
+		 xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:comp="components.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Image;
+			import mx.containers.Tile;
+			import mx.core.WindowedApplication;
+			import mx.core.Window;
+			import mx.managers.PopUpManager;
+			import components.Vaccination;
+			import components.History;
+			
+			public function init(){
+			lNameDisplay.text=parentApplication.selectedPatient.lName;
+			fNameDisplay.text=parentApplication.selectedPatient.fName;
+			dobDisplay.text=parentApplication.selectedPatient.dob;
+			lastSeenDisplay.text=parentApplication.selectedPatient.lastSeen;
+			heightDisplay.text=parentApplication.selectedPatient.height;
+			weightDisplay.text=parentApplication.selectedPatient.weight;
+			genderDisplay.text=parentApplication.selectedPatient.gender;
+
+			}
+
+			
+			private function vaccineHandler(event:Event)
+			{
+				var window:Vaccination = new Vaccination();
+				window.open();
+				window.addEventListener(Event.CLOSE, closeWindow);
+				this.parentApplication.enabled=false;
+
+			}
+
+			private function medicalHandler(event:Event)
+			{
+				
+				var window:History = new History();
+				window.open();
+				window.addEventListener(Event.CLOSE, closeWindow);
+				this.parentApplication.enabled=false;
+
+			}
+
+			private function closeWindow(event:Event)
+			{
+				this.parentApplication.enabled=true;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox height="30%" width="100%" paddingLeft="70">
+		<mx:VBox height="100%" width="20%">
+			<mx:Label text="Last Name" fontSize="16"/>
+			<mx:Label text="First Name" fontSize="16"/>
+			<mx:Label text="Gender" fontSize="16"/>
+			<mx:Label text="Date of Birth" fontSize="16"/>
+		</mx:VBox>
+		<mx:VBox height="100%" width="32%">
+			<mx:TextInput id="lNameDisplay" width="70%" editable="false"/>
+			<mx:TextInput id="fNameDisplay" width="70%" editable="false"/>
+			<mx:TextInput id="genderDisplay" width="70%" editable="false"/>
+			<mx:TextInput id="dobDisplay" width="70%" editable="false"/>
+		</mx:VBox>
+		<mx:VBox height="100%" width="48%">
+			<mx:Image height="100%" width="100%" source="Assets/ahiru.jpeg"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox height="50%" width="100%" paddingLeft="70">
+		<mx:VBox height="100%" width="20%">
+			<mx:Label text="Weight" fontSize="16"/>
+			<mx:Label text="Date Last Seen" fontSize="16"/>
+			<mx:Label text="Height" fontSize="16"/>
+		</mx:VBox>
+		<mx:VBox height="100%" width="32%">
+			<mx:TextInput id="weightDisplay" width="70%" editable="false"/>
+			<mx:TextInput id="lastSeenDisplay" width="70%" editable="false"/>
+			<mx:TextInput id="heightDisplay" width="70%" editable="false"/>
+		</mx:VBox>
+		<mx:VBox height="100%" width="25%" paddingTop="20">
+			<mx:Button label="Vaccinations" width="100%"
+					   click="vaccineHandler(event)"/>
+			<mx:Button label="Medical History" width="100%"
+					   click="medicalHandler(event)"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox width="100%" height="20%" paddingLeft="240">
+		<mx:Button label="Diagnose" height="45%" width="30%"/>
+		<mx:Button label="Followup" height="45%" width="30%"/>
+	</mx:HBox>
+</mx:VBox>

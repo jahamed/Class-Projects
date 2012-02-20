@@ -1,0 +1,9 @@
+<commands xsi:noNamespaceSchemaLocation="http://www.cs.umd.edu/users/meesh/420/part1/part1in.xsd" spatialWidth="512" spatialHeight="512">
+<createCity name="Baltimore" y="39" x="76" radius="30" color="black"/>
+<createCity name="Chicago" x="81" y="47" radius="35" color="black"/>
+<createCity name="Atlanta" x="84" y="33" radius="40" color="black"/>
+<createCity name="Los_Angeles" x="118" y="33" radius="80" color="black"/>
+<createCity name="Miami" x="80" y="25" radius="30" color="black"/>
+<createCity name="Boston" x="71" y="42" radius="50" color="black"/>
+<listCities sortBy="coordinate"/>
+</commands>

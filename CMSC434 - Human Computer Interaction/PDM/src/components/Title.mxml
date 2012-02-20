@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" borderStyle="solid" width="100%">
+		 <mx:Script>
+		 	<![CDATA[
+		 		[Bindable]
+		 		public var text:String;
+
+		 	]]>
+		 </mx:Script>
+		 
+	<mx:Label height="100%" width="100%" text="{text}"
+			  textAlign="center" fontSize="30" horizontalCenter="50%" verticalCenter="50%" />
+</mx:HBox>
